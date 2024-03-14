@@ -13,9 +13,9 @@ import {ReturnsTooLittleToken} from "./utils/weird-tokens/ReturnsTooLittleToken.
 import {DSTestPlus} from "./utils/DSTestPlus.sol";
 
 import {ERC20} from "../tokens/ERC20.sol";
-import {SafeTransferLib} from "../utils/SafeTransferLib.sol";
+import {YSafeTransferLib} from "../utils/YSafeTransferLib.sol";
 
-contract SafeTransferLibTest is DSTestPlus {
+contract YSafeTransferLibTest is DSTestPlus {
     RevertingToken reverting;
     ReturnsTwoToken returnsTwo;
     ReturnsFalseToken returnsFalse;
@@ -52,7 +52,7 @@ contract SafeTransferLibTest is DSTestPlus {
     }
 
     function testTransferWithNonContract() public {
-        SafeTransferLib.safeTransfer(ERC20(address(0xBADBEEF)), address(0xBEEF), 1e18);
+        YSafeTransferLib.safeTransfer(ERC20(address(0xBADBEEF)), address(0xBEEF), 1e18);
     }
 
     function testTransferFromWithMissingReturn() public {
@@ -68,7 +68,7 @@ contract SafeTransferLibTest is DSTestPlus {
     }
 
     function testTransferFromWithNonContract() public {
-        SafeTransferLib.safeTransferFrom(ERC20(address(0xBADBEEF)), address(0xFEED), address(0xBEEF), 1e18);
+        YSafeTransferLib.safeTransferFrom(ERC20(address(0xBADBEEF)), address(0xFEED), address(0xBEEF), 1e18);
     }
 
     function testApproveWithMissingReturn() public {
@@ -84,11 +84,11 @@ contract SafeTransferLibTest is DSTestPlus {
     }
 
     function testApproveWithNonContract() public {
-        SafeTransferLib.safeApprove(ERC20(address(0xBADBEEF)), address(0xBEEF), 1e18);
+        YSafeTransferLib.safeApprove(ERC20(address(0xBADBEEF)), address(0xBEEF), 1e18);
     }
 
     function testTransferETH() public {
-        SafeTransferLib.safeTransferETH(address(0xBEEF), 1e18);
+        YSafeTransferLib.safeTransferETH(address(0xBEEF), 1e18);
     }
 
     function testFailTransferWithReturnsFalse() public {
@@ -206,11 +206,11 @@ contract SafeTransferLibTest is DSTestPlus {
     ) public brutalizeMemory(brutalizeWith) {
         if (uint256(uint160(nonContract)) <= 18 || nonContract.code.length > 0) return;
 
-        SafeTransferLib.safeTransfer(ERC20(nonContract), to, amount);
+        YSafeTransferLib.safeTransfer(ERC20(nonContract), to, amount);
     }
 
     function testFailTransferETHToContractWithoutFallback() public {
-        SafeTransferLib.safeTransferETH(address(this), 1e18);
+        YSafeTransferLib.safeTransferETH(address(this), 1e18);
     }
 
     function testTransferFromWithMissingReturn(
@@ -297,7 +297,7 @@ contract SafeTransferLibTest is DSTestPlus {
     ) public brutalizeMemory(brutalizeWith) {
         if (uint256(uint160(nonContract)) <= 18 || nonContract.code.length > 0) return;
 
-        SafeTransferLib.safeTransferFrom(ERC20(nonContract), from, to, amount);
+        YSafeTransferLib.safeTransferFrom(ERC20(nonContract), from, to, amount);
     }
 
     function testApproveWithMissingReturn(
@@ -379,7 +379,7 @@ contract SafeTransferLibTest is DSTestPlus {
     ) public brutalizeMemory(brutalizeWith) {
         if (uint256(uint160(nonContract)) <= 18 || nonContract.code.length > 0) return;
 
-        SafeTransferLib.safeApprove(ERC20(nonContract), to, amount);
+        YSafeTransferLib.safeApprove(ERC20(nonContract), to, amount);
     }
 
     function testTransferETH(
@@ -392,7 +392,7 @@ contract SafeTransferLibTest is DSTestPlus {
 
         amount = bound(amount, 0, address(this).balance);
 
-        SafeTransferLib.safeTransferETH(recipient, amount);
+        YSafeTransferLib.safeTransferETH(recipient, amount);
     }
 
     function testFailTransferWithReturnsFalse(
@@ -535,20 +535,16 @@ contract SafeTransferLibTest is DSTestPlus {
         verifySafeApprove(address(returnsGarbage), to, amount);
     }
 
-    function testFailTransferETHToContractWithoutFallback(uint256 amount, bytes calldata brutalizeWith)
-        public
-        brutalizeMemory(brutalizeWith)
-    {
-        SafeTransferLib.safeTransferETH(address(this), amount);
+    function testFailTransferETHToContractWithoutFallback(
+        uint256 amount,
+        bytes calldata brutalizeWith
+    ) public brutalizeMemory(brutalizeWith) {
+        YSafeTransferLib.safeTransferETH(address(this), amount);
     }
 
-    function verifySafeTransfer(
-        address token,
-        address to,
-        uint256 amount
-    ) internal {
+    function verifySafeTransfer(address token, address to, uint256 amount) internal {
         uint256 preBal = ERC20(token).balanceOf(to);
-        SafeTransferLib.safeTransfer(ERC20(address(token)), to, amount);
+        YSafeTransferLib.safeTransfer(ERC20(address(token)), to, amount);
         uint256 postBal = ERC20(token).balanceOf(to);
 
         if (to == address(this)) {
@@ -558,12 +554,7 @@ contract SafeTransferLibTest is DSTestPlus {
         }
     }
 
-    function verifySafeTransferFrom(
-        address token,
-        address from,
-        address to,
-        uint256 amount
-    ) internal {
+    function verifySafeTransferFrom(address token, address from, address to, uint256 amount) internal {
         forceApprove(token, from, address(this), amount);
 
         // We cast to MissingReturnToken here because it won't check
@@ -571,7 +562,7 @@ contract SafeTransferLibTest is DSTestPlus {
         MissingReturnToken(token).transfer(from, amount);
 
         uint256 preBal = ERC20(token).balanceOf(to);
-        SafeTransferLib.safeTransferFrom(ERC20(token), from, to, amount);
+        YSafeTransferLib.safeTransferFrom(ERC20(token), from, to, amount);
         uint256 postBal = ERC20(token).balanceOf(to);
 
         if (from == to) {
@@ -581,22 +572,13 @@ contract SafeTransferLibTest is DSTestPlus {
         }
     }
 
-    function verifySafeApprove(
-        address token,
-        address to,
-        uint256 amount
-    ) internal {
-        SafeTransferLib.safeApprove(ERC20(address(token)), to, amount);
+    function verifySafeApprove(address token, address to, uint256 amount) internal {
+        YSafeTransferLib.safeApprove(ERC20(address(token)), to, amount);
 
         assertEq(ERC20(token).allowance(address(this), to), amount);
     }
 
-    function forceApprove(
-        address token,
-        address from,
-        address to,
-        uint256 amount
-    ) internal {
+    function forceApprove(address token, address from, address to, uint256 amount) internal {
         uint256 slot = token == address(erc20) ? 4 : 2; // Standard ERC20 name and symbol aren't constant.
 
         hevm.store(

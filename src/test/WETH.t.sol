@@ -4,7 +4,7 @@ pragma solidity 0.8.15;
 import {DSTestPlus} from "./utils/DSTestPlus.sol";
 import {DSInvariantTest} from "./utils/DSInvariantTest.sol";
 
-import {SafeTransferLib} from "../utils/SafeTransferLib.sol";
+import {YSafeTransferLib} from "../utils/YSafeTransferLib.sol";
 
 import {WETH} from "../tokens/WETH.sol";
 
@@ -19,7 +19,7 @@ contract WETHTest is DSTestPlus {
         assertEq(weth.balanceOf(address(this)), 0);
         assertEq(weth.totalSupply(), 0);
 
-        SafeTransferLib.safeTransferETH(address(weth), 1 ether);
+        YSafeTransferLib.safeTransferETH(address(weth), 1 ether);
 
         assertEq(weth.balanceOf(address(this)), 1 ether);
         assertEq(weth.totalSupply(), 1 ether);
@@ -69,7 +69,7 @@ contract WETHTest is DSTestPlus {
         assertEq(weth.balanceOf(address(this)), 0);
         assertEq(weth.totalSupply(), 0);
 
-        SafeTransferLib.safeTransferETH(address(weth), amount);
+        YSafeTransferLib.safeTransferETH(address(weth), amount);
 
         assertEq(weth.balanceOf(address(this)), amount);
         assertEq(weth.totalSupply(), amount);
@@ -135,7 +135,7 @@ contract WETHTester {
     }
 
     function fallbackDeposit(uint256 amount) public {
-        SafeTransferLib.safeTransferETH(address(weth), amount);
+        YSafeTransferLib.safeTransferETH(address(weth), amount);
     }
 
     function withdraw(uint256 amount) public {

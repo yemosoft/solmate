@@ -2,16 +2,16 @@
 pragma solidity >=0.8.0;
 
 /// @notice Arithmetic library with operations for fixed-point numbers.
-/// @author Solmate (https://github.com/transmissions11/solmate/blob/main/src/utils/FixedPointMathLib.sol)
+/// @author Solmate (https://github.com/transmissions11/solmate/blob/main/src/utils/YFixedPointMathLib.sol)
 /// @author Inspired by USM (https://github.com/usmfum/USM/blob/master/contracts/WadMath.sol)
-library FixedPointMathLib {
+library YFixedPointMathLib {
     /*//////////////////////////////////////////////////////////////
                     SIMPLIFIED FIXED POINT OPERATIONS
     //////////////////////////////////////////////////////////////*/
 
-    uint256 internal constant MAX_UINT256 = 2**256 - 1;
+    uint256 internal constant MAX_UINT256 = 2 ** 256 - 1;
 
-    uint256 internal constant WAD = 1e18; // The scalar of ETH and most ERC20s.
+    uint256 internal constant WAD = 1e18; // The scalar of ETH and most YERC20s.
 
     function mulWadDown(uint256 x, uint256 y) internal pure returns (uint256) {
         return mulDivDown(x, y, WAD); // Equivalent to (x * y) / WAD rounded down.
@@ -33,11 +33,7 @@ library FixedPointMathLib {
                     LOW LEVEL FIXED POINT OPERATIONS
     //////////////////////////////////////////////////////////////*/
 
-    function mulDivDown(
-        uint256 x,
-        uint256 y,
-        uint256 denominator
-    ) internal pure returns (uint256 z) {
+    function mulDivDown(uint256 x, uint256 y, uint256 denominator) internal pure returns (uint256 z) {
         /// @solidity memory-safe-assembly
         assembly {
             // Equivalent to require(denominator != 0 && (y == 0 || x <= type(uint256).max / y))
@@ -50,11 +46,7 @@ library FixedPointMathLib {
         }
     }
 
-    function mulDivUp(
-        uint256 x,
-        uint256 y,
-        uint256 denominator
-    ) internal pure returns (uint256 z) {
+    function mulDivUp(uint256 x, uint256 y, uint256 denominator) internal pure returns (uint256 z) {
         /// @solidity memory-safe-assembly
         assembly {
             // Equivalent to require(denominator != 0 && (y == 0 || x <= type(uint256).max / y))
@@ -68,11 +60,7 @@ library FixedPointMathLib {
         }
     }
 
-    function rpow(
-        uint256 x,
-        uint256 n,
-        uint256 scalar
-    ) internal pure returns (uint256 z) {
+    function rpow(uint256 x, uint256 n, uint256 scalar) internal pure returns (uint256 z) {
         /// @solidity memory-safe-assembly
         assembly {
             switch x
